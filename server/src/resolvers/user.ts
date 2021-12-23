@@ -38,7 +38,7 @@ export class UserResolver {
   @Mutation (() => UserResponse)
   async register(
     @Arg("userDetails") details: UsernamePasswordInput,
-    @Ctx() { em } : MyContext
+    @Ctx() { req ,em } : MyContext
   ): Promise<UserResponse>{
     // check if username is too short 
     if(details.username.length <= 2){
@@ -79,6 +79,10 @@ export class UserResolver {
         }
     }
     
+    // set cookie after they have registered
+    // this will log them in and keep them logged in. 
+    
+    req.session.userId = user.id
     return {user};
   };
 
@@ -108,7 +112,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg("userDetails") details : UsernamePasswordInput,
-    @Ctx(){em}:MyContext
+    @Ctx(){em, req}:MyContext
   ): Promise<UserResponse> {
 
     const user = await em.findOne(User, {username: details.username})
@@ -135,9 +139,24 @@ export class UserResolver {
       } 
      }
 
+    req.session.userId = user.id
    return {user};  
   }
 
+  @Query(()=> User, {nullable:true})
+  async me(
+    @Ctx() { em, req }: MyContext
+  )
+    {
+      // you are not logged in. 
+      if(!req.session.userId){
+        return null;
+      }
+
+      const user = await em.findOne(User, {id: req.session.userId})
+
+      return user;
+    }
 
 
 }

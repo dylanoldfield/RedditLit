@@ -17,7 +17,7 @@ export class Post {
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 
-  @Field()
+  @Field() // if you comment a Field out, it will not expose it to graphql
   @Property({type:"text"})
   title!: string;
 
