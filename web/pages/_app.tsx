@@ -1,11 +1,24 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import '../styles/globals.css'
 
+import { createClient, Provider } from 'urql';
+
+const client = createClient({
+  url: 'http://localhost:4000/graphql',
+  fetchOptions :{
+    credentials: "include",
+  }
+});
+
+
 function MyApp({ Component, pageProps }) {
   return (
-    <ChakraProvider>
-      <Component {...pageProps} />
-    </ChakraProvider>
+    <Provider value={client}>
+      <ChakraProvider>
+        <Component {...pageProps} />
+      </ChakraProvider>
+    </Provider>
+
   )
 
 }

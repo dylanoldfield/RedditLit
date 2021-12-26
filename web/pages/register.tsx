@@ -1,10 +1,25 @@
 import { FormControl, FormLabel, Input, FormHelperText, FormErrorMessage, Button, Box } from '@chakra-ui/react';
 import React from 'react'
 import { useState} from 'react'
+import { Wrapper } from '../components/Wrapper';
+import {useMutation} from 'urql';
 
 interface registerProps {
 
 }
+
+const RESIGISTER_MUTATION = `mutation Register($registerUserDetails: UsernamePasswordInput!) {
+  register(userDetails: $registerUserDetails) {
+    user {
+      username
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`
 
 interface field{
   value: string;
@@ -22,12 +37,15 @@ export const Register: React.FC<registerProps> = ({}) => {
       password: {value: '', error: false}
     });
 
+    const [,register] = useMutation(RESIGISTER_MUTATION);
+
     return (
       <form onSubmit={(e)=>{
         e.preventDefault()
         console.log(form)
+        return register({username: form.name.value, password: form.password.value})
         }}> 
-        <Box maxW={'sm'} mt={'10'} mx={'auto'} alignSelf={'center'}>
+        <Wrapper variant="small">
         <FormControl >
           <FormLabel htmlFor='name'>Name</FormLabel>
           <Input
@@ -35,7 +53,7 @@ export const Register: React.FC<registerProps> = ({}) => {
             type='text'
             value={form.name.value}
             onChange={
-              (e) => { setForm({...form, name: {value: e.target.value, error: false}})}
+              (e) => { setForm({...form, name: {...form.name, value: e.target.value}})}
             }
           />
           {!form.name.error ? (
@@ -65,7 +83,7 @@ export const Register: React.FC<registerProps> = ({}) => {
             Submit
           </Button>
         </FormControl>
-      </Box>
+      </Wrapper>
       </form>
     );
 }

@@ -14,7 +14,7 @@ import connectRedis from 'connect-redis';
 import cors from 'cors';
 
 
-const main = async () => {
+const startServer = async () => {
   // console.log(`dirname:${__dirname}`);
 
   const orm = await MikroORM.init(mikroOrmConfig);
@@ -24,14 +24,21 @@ const main = async () => {
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
 
+    // apply apollo middleware
+    const apolloServer = new ApolloServer({
+      schema: await buildSchema({
+      resolvers:[HelloResolver, PostResolver, UserResolver],
+      validate: false,
+    }),
+    context: ({req, res}) => ({em: orm.em, req, res}), // context returns an object passed to every resolver through context object
+  });
+
     //options for cors midddleware
   const options: cors.CorsOptions = {
-    origin: 'https://studio.apollographql.com',
+    origin: 'http://localhost:3000',
     credentials: true,
   };
   
-  app.set("trust proxy", 1);
-  app.use(cors(options));
   // apply redis middleware first 
   app.use(
     session({
@@ -53,19 +60,13 @@ const main = async () => {
     })
   )
 
-  app.options('*', cors<express.Request>(options));
+  app.use(cors(options));
+  // app.options('*', cors<express.Request>(options));
 
-  // then apply apollo middleware
-  const apolloServer = new ApolloServer({
-      schema: await buildSchema({
-      resolvers:[HelloResolver, PostResolver, UserResolver],
-      validate: false,
-    }),
-    context: ({req, res}) => ({em: orm.em, req, res}), // context returns an object passed to every resolver through context object
-  });
 
+  // start server and apply rest of middleware & attach apollo  
   await  apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => {
     console.log("server started on port 4000")
@@ -80,8 +81,8 @@ const main = async () => {
   // console.log(posts);
 
   console.log('hello dylan');
-  };
+  }; 
 
-  main().catch((err) => {
+  startServer().catch((err) => {
     console.log(err);
   })
