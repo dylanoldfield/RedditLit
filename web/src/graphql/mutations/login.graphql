@@ -1,0 +1,11 @@
+ mutation Login($userDetails: UsernamePasswordInput!) {
+    login(userDetails: $userDetails) {
+      user {
+        username
+      }
+      errors {
+        field
+        message
+      }
+    }
+  }
