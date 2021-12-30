@@ -5,7 +5,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.7.3",
@@ -19,6 +20,10 @@
     "urql": "^2.0.6"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.3.0",
+    "@graphql-codegen/typescript": "2.4.1",
+    "@graphql-codegen/typescript-operations": "2.2.1",
+    "@graphql-codegen/typescript-urql": "^3.4.1",
     "@types/react": "^17.0.37",
     "eslint": "8.5.0",
     "eslint-config-next": "12.0.7",
