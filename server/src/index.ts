@@ -35,14 +35,14 @@ const startServer = async () => {
 
     //options for cors midddleware
   const options: cors.CorsOptions = {
-    origin: 'http://localhost:3000',
+    origin: ['https://studio.apollographql.com','http://127.0.0.1:3000','http://localhost:3000'],
     credentials: true,
   };
   
   // apply redis middleware first 
   app.use(
     session({
-      name: "sid",
+      name: "dylancookie",
       store: new RedisStore({ 
         client: redisClient,
         disableTTL: true, //TTL is used to extend session on interaction, or dies after timer expires

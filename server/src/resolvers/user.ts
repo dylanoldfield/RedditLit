@@ -139,7 +139,10 @@ export class UserResolver {
       } 
      }
 
+     console.log("session id: " ,req.session.id)
+     console.log("user id: ",req.session.userId);
     req.session.userId = user.id
+    console.log("user id 2: ", req.session.userId);
    return {user};  
   }
 
