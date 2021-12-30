@@ -4,37 +4,41 @@ import { useState} from 'react'
 import { Wrapper } from '../components/Wrapper';
 import {useMutation} from 'urql';
 import {useRegisterMutation} from '../generated/graphql'
+import {FormField} from '../types'
 
 interface registerProps {
 
 }
 
-interface field{
-  value: string;
-  error: boolean;
-}
 
-interface formFields {
-    name: field;
-    password:field;
+interface formFields{
+  name: FormField
+  password: FormField
 }
 
 export const Register: React.FC<registerProps> = ({}) => {
     const [form, setForm] = useState<formFields>({
-      name: {value: '', error: false},
-      password: {value: '', error: false}
+      name: {value: '', error: undefined},
+      password: {value: '', error: undefined}
     });
 
     const [,register] = useRegisterMutation();
 
-    return (
-      <form onSubmit={ async (e)=>{
+    const handleRegistration = async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        console.log(form)
+        
+        //send registration mutation
         const response = await register({registerUserDetails: {username: form.name.value, password: form.password.value}})
+        // check if error
+        if(response.data?.register.errors){
+          
+        }
         console.log(response)
         return response;
-        }}> 
+    } 
+
+    return (
+      <form onSubmit={handleRegistration}> 
         <Wrapper variant="small">
         <FormControl >
           <FormLabel htmlFor='name'>Name</FormLabel>
@@ -51,7 +55,7 @@ export const Register: React.FC<registerProps> = ({}) => {
               Please enter full name
             </FormHelperText>
           ) : (
-            <FormErrorMessage>Name is required.</FormErrorMessage>
+            <FormErrorMessage>{form.name.error?.errorMessage}</FormErrorMessage>
           )}
           <FormLabel htmlFor='password' mt={'5'}>Password</FormLabel>
           <Input
@@ -59,7 +63,7 @@ export const Register: React.FC<registerProps> = ({}) => {
             type='password'
             value={form.password.value}
             onChange={
-              (e) => { setForm({...form, password: {value: e.target.value, error: false}})}
+              (e) => { setForm({...form, password: {...form.password, value: e.target.value}})}
             }
           />
           {!form.password.error ? (
@@ -67,7 +71,7 @@ export const Register: React.FC<registerProps> = ({}) => {
               Please enter password
             </FormHelperText>
           ) : (
-            <FormErrorMessage>Password is required.</FormErrorMessage>
+            <FormErrorMessage>{form.password.error?.errorMessage}</FormErrorMessage>
           )}
           <Button type='submit' colorScheme={'teal'} size='md'>
             Submit
