@@ -1,4 +1,3 @@
-import { ChakraProvider } from '@chakra-ui/react'
 import '../styles/globals.css'
 
 import { createClient, Provider } from 'urql';
@@ -11,12 +10,10 @@ const client = createClient({
 });
 
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps } : any) {
   return (
     <Provider value={client}>
-      <ChakraProvider>
         <Component {...pageProps} />
-      </ChakraProvider>
     </Provider>
 
   )
