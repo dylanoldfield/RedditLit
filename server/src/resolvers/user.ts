@@ -53,7 +53,7 @@ export class UserResolver {
     }
 
     // check if password is too short 
-        if(details.password.length <= 3){
+        if(details.password.length < 3){
           return{
             errors: [
               {
@@ -121,7 +121,7 @@ export class UserResolver {
       errors: [
         {
           field: 'username',
-          message: "that username doesn't exist"
+          message: "this username does not exist"
         }
       ]
      } 
@@ -133,7 +133,7 @@ export class UserResolver {
        errors: [
          {
            field: 'password',
-           message: "this password is not valid"
+           message: "this password is incorrect, try again."
          }
        ]
       } 
